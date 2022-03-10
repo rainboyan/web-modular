@@ -1,0 +1,12 @@
+
+grails {
+    plugins {
+        api project(':framework:core')
+        api project(':framework:util')
+        api project(':modules:admin')
+        api project(':modules:common')
+    }
+}
+
+dependencies {
+}

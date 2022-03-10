@@ -22,9 +22,9 @@ repositories {
 
 grailsPublish {
     userOrg = 'rainboyan'  
-    githubSlug = 'rainboyan/web-clean'
+    githubSlug = 'rainboyan/web-modular'
     license = 'Apache-2.0'
-    title = "Grails Web Clean Profile"
-    desc = "A profile for Clean Web applications"
+    title = "Grails Modular Monolith Web Profile"
+    desc = "A profile for Modular Monolith Web applications"
     developers = [rainboyan:'Michael Yan']
 }    

@@ -1,4 +1,4 @@
-description: Profile for Clean Web applications
+description: Profile for Modular Monolith Web applications
 skeleton:
     executable: ["**/gradlew*", "**/grailsw*"]
     binaryExtensions: ['png', 'gif', 'jpg', 'jpeg', 'ico', 'icns', 'pdf', 'zip', 'jar', 'class', 'woff', 'woff2']
