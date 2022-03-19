@@ -27,6 +27,29 @@ cd web-modular-demo
 ./gradlew :app:bootRun
 ```
 
+Project directories:
+
+```
+├── app
+│   ├── grails-app
+│   ├── src
+│   └── build.gradle
+├── framework
+│   ├── core
+│   └── util
+├── gradle
+│   └── wrapper
+├── modules
+│   ├── admin
+│   └── common
+├── plugins
+├── build.gradle
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle
+```
+
 ## What's New
 
 ### 5.0.0-SNAPSHOT
