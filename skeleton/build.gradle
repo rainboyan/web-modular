@@ -11,6 +11,7 @@ repositories {
 @repositories@
 }
 
+version "0.1"
 group "@grails.app.group@"
 
 subprojects { project ->
@@ -23,161 +24,172 @@ subprojects { project ->
     boolean isPlugin = project.path.contains("plugins:")
     boolean isProject = isApp || isFramework || isModule || isPlugin
 
-    if (isProject) {
-        repositories {
-            @repositories@
+    if (!isProject) return
+
+    repositories {
+        @repositories@
+    }
+
+    apply plugin:"eclipse"
+    apply plugin:"idea"
+    apply plugin:"maven-publish"
+    apply plugin:"java-library"
+
+    if (isApp) {
+        apply plugin:"war"
+        apply plugin:"org.grails.grails-web"
+        apply plugin:"org.grails.grails-gsp"
+        apply plugin:"com.bertramlabs.asset-pipeline"
+    }
+
+    if (isFramework) {
+        apply plugin:"groovy"
+    }
+
+    if (isModule) {
+        apply plugin:"org.grails.grails-plugin"
+        apply plugin:"org.grails.grails-gsp"
+        apply plugin:"com.bertramlabs.asset-pipeline"
+    }
+
+    if (isPlugin) {
+        apply plugin:"org.grails.grails-plugin"
+    }
+
+    if (isFramework) {
+        dependencies {
+            implementation "org.codehaus.groovy:groovy:$groovyVersion"
         }
-
-        apply plugin:"eclipse"
-        apply plugin:"idea"
-        apply plugin:"maven-publish"
-        apply plugin:"java-library"
-
-        if (isApp) {
-            apply plugin:"war"
-            apply plugin:"org.grails.grails-web"
-            apply plugin:"org.grails.grails-gsp"
-            apply plugin:"com.bertramlabs.asset-pipeline"
-        }
-
-        if (isFramework) {
-            apply plugin:"groovy"
-        }
-
-        if (isModule) {
-            apply plugin:"org.grails.grails-plugin"
-            apply plugin:"org.grails.grails-gsp"
-            apply plugin:"com.bertramlabs.asset-pipeline"
-        }
-
-        if (isPlugin) {
-            apply plugin:"org.grails.grails-plugin"
-        }
-
-        if (isFramework) {
-            dependencies {
-                implementation "org.codehaus.groovy:groovy:$groovyVersion"
-            }
-        } else {
-            configurations {
-                developmentOnly
-                runtimeClasspath {
-                    extendsFrom developmentOnly
-                }
-            }
-
-            dependencies {
-                developmentOnly("org.springframework.boot:spring-boot-devtools")
-                developmentOnly("io.methvin:directory-watcher:0.15.0")
-                @dependencies@
-
-                if (isModule) {
-                    profile "org.grails.profiles:web-plugin"
-                }
-
-                if (isPlugin) {
-                    profile "org.grails.profiles:plugin"
-                }
+    } else {
+        configurations {
+            developmentOnly
+            runtimeClasspath {
+                extendsFrom developmentOnly
             }
         }
 
-        if (!isFramework) {
-            bootRun {
-                systemProperties = System.properties
-                ignoreExitValue true
-                jvmArgs(
-                        '-Dspring.output.ansi.enabled=always',
-                        '-noverify',
-                        '-XX:TieredStopAtLevel=1',
-                        '-Xmx1024m')
-                sourceResources sourceSets.main
-                String springProfilesActive = 'spring.profiles.active'
-                systemProperty springProfilesActive, System.getProperty(springProfilesActive)
+        dependencies {
+            developmentOnly("org.springframework.boot:spring-boot-devtools")
+            developmentOnly("io.methvin:directory-watcher:0.15.0")
+            @dependencies@
+
+            if (isModule) {
+                profile "org.grails.profiles:web-plugin"
             }
 
-            tasks.withType(GroovyCompile) {
-                configure(groovyOptions) {
-                    forkOptions.jvmArgs = ['-Xmx1024m']
-                }
+            if (isPlugin) {
+                profile "org.grails.profiles:plugin"
             }
         }
+    }
 
-        if (isApp) {
-            tasks.withType(Test) {
-                useJUnitPlatform()
-                systemProperty "geb.env", System.getProperty('geb.env')
-                systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
-                systemProperty "webdriver.chrome.driver", System.getProperty('webdriver.chrome.driver')
-                systemProperty "webdriver.gecko.driver", System.getProperty('webdriver.gecko.driver')
-            }
-
-            tasks.withType(Jar).all {
-                duplicatesStrategy "include"
-            }
-
-            bootWar {
-                manifest.mainAttributes(
-                    "Built-By": System.properties['user.name'],
-                    "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
-                    "Implementation-Title": "Grails",
-                    "Implementation-Version": version,
-                    "Implementation-Vendor": "Grails Foundation")
-            }
- 
-        } else if (isModule || isPlugin) {
-            tasks.withType(Test) {
-                useJUnitPlatform()
-            }
-
-            bootJar.enabled = false
+    if (!isFramework) {
+        bootRun {
+            systemProperties = System.properties
+            ignoreExitValue true
+            jvmArgs(
+                    '-Dspring.output.ansi.enabled=always',
+                    '-noverify',
+                    '-XX:TieredStopAtLevel=1',
+                    '-Xmx1024m')
+            sourceResources sourceSets.main
+            String springProfilesActive = 'spring.profiles.active'
+            systemProperty springProfilesActive, System.getProperty(springProfilesActive)
         }
 
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
+        tasks.withType(GroovyCompile) {
+            configure(groovyOptions) {
+                forkOptions.jvmArgs = ['-Xmx1024m']
+            }
+        }
+    }
 
-        jar {
-            baseName = project.name
+    if (isApp) {
+        tasks.withType(Test) {
+            useJUnitPlatform()
+            systemProperty "geb.env", System.getProperty('geb.env')
+            systemProperty "geb.build.reportsDir", reporting.file("geb/integrationTest")
+            systemProperty "webdriver.chrome.driver", System.getProperty('webdriver.chrome.driver')
+            systemProperty "webdriver.gecko.driver", System.getProperty('webdriver.gecko.driver')
+        }
+
+        tasks.withType(Jar).all {
+            duplicatesStrategy "include"
+        }
+
+        bootWar {
             manifest.mainAttributes(
                 "Built-By": System.properties['user.name'],
                 "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
                 "Implementation-Title": "Grails",
                 "Implementation-Version": version,
                 "Implementation-Vendor": "Grails Foundation")
-
-            duplicatesStrategy 'include'
         }
 
-        publishing {
-            publications {
-                maven(MavenPublication) {
-                    groupId = "@grails.app.group@"
-                    artifactId = project.name
-                    version = version
+    } else if (isModule || isPlugin) {
+        tasks.withType(Test) {
+            useJUnitPlatform()
+        }
 
-                    from components.java
+        bootJar.enabled = false
+    }
 
-                    pom {
-                        name = 'Grails'
-                        description = 'Grails Modular Monolith Project'
-                        url = 'https://grails.org'
-                        licenses {
-                            license {
-                                name = 'The Apache License, Version 2.0'
-                                url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
-                            }
+    if (isApp) {
+        assets {
+            minifyJs = true
+            minifyCss = true
+            enableSourceMaps = true
+        }
+    } else if (isModule || isPlugin) {
+        assets {
+            packagePlugin = true
+        }
+    }
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    jar {
+        baseName = project.name
+        manifest.mainAttributes(
+            "Built-By": System.properties['user.name'],
+            "Created-By": System.properties['java.vm.version'] + " (" + System.properties['java.vm.vendor'] + ")",
+            "Implementation-Title": "Grails",
+            "Implementation-Version": version,
+            "Implementation-Vendor": "Grails Foundation")
+
+        duplicatesStrategy 'include'
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = "@grails.app.group@"
+                artifactId = project.name
+                version = version
+
+                from components.java
+
+                pom {
+                    name = 'Grails'
+                    description = 'Grails Modular Monolith Project'
+                    url = 'https://grails.org'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
-                        developers {
-                            developer {
-                                id = 'rainboyan'
-                                name = 'Michael Yan'
-                                email = 'rain@rainboyan.com'
-                            }
+                    }
+                    developers {
+                        developer {
+                            id = 'rainboyan'
+                            name = 'Michael Yan'
+                            email = 'rain@rainboyan.com'
                         }
                     }
                 }
             }
         }
-
     }
 
 }

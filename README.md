@@ -2,7 +2,7 @@
 
 A profile for creating Grails Modular Monolith web applications.
 
-## Grails Version
+## Grails Stack
 
 - Grails **5.0.0**
 
@@ -27,7 +27,7 @@ cd web-modular-demo
 ./gradlew :app:bootRun
 ```
 
-Project directories:
+Generated structure of the multi-project:
 
 ```
 ├── app
