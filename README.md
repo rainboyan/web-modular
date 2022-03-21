@@ -13,7 +13,7 @@ A profile for creating Grails Modular Monolith web applications.
 
 ```
 git clone https://github.com/rainboyan/web-modular.git
-cd web-clean
+cd web-modular
 ./gradlew publishToMavenLocal
 ```
 
